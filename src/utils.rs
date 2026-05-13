@@ -10,13 +10,13 @@ pub fn default_sky_mesh() -> Mesh {
 }
 
 pub fn flip_mesh_normals(mesh: &mut Mesh) {
-    if let Some(normals) = mesh.attribute_mut(Mesh::ATTRIBUTE_NORMAL) {
-        if let VertexAttributeValues::Float32x3(values) = normals {
-            for n in values.iter_mut() {
-                n[0] = -n[0];
-                n[1] = -n[1];
-                n[2] = -n[2];
-            }
+    if let Some(normals) = mesh.attribute_mut(Mesh::ATTRIBUTE_NORMAL)
+        && let VertexAttributeValues::Float32x3(values) = normals
+    {
+        for n in values.iter_mut() {
+            n[0] = -n[0];
+            n[1] = -n[1];
+            n[2] = -n[2];
         }
     }
 
@@ -39,6 +39,5 @@ pub fn flip_mesh_normals(mesh: &mut Mesh) {
 #[cfg(feature = "serde")]
 pub fn path_relative_to_bevy_exe(path: &str) -> std::path::PathBuf {
     let current_dir = bevy::asset::io::file::FileAssetReader::get_base_path();
-    let new_path = current_dir.join(path);
-    new_path
+    current_dir.join(path)
 }
