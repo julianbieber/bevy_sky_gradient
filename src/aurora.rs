@@ -9,12 +9,13 @@ use bevy::{
 use crate::{
     aurora_material::AuroraMaterial,
     noise::{NoiseHandles, setup_noise_texture},
-    plugin::{AuroraTextureHandle, SkyboxMagnetTag, spawn_aurora_texture},
+    plugin::{AuroraTextureHandle, OnlySkyboxMagnet, SkyboxMagnetTag, spawn_aurora_texture},
     utils,
 };
 
 #[derive(Component)]
 pub struct AuroraCameraTag;
+pub type OnlyAuroraCameraTag = (With<AuroraCameraTag>, Without<SkyboxMagnetTag>);
 
 #[derive(Resource, Reflect, Clone)]
 pub struct AuroraSettings {
@@ -37,16 +38,9 @@ impl Default for AuroraSettings {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct AuroraPlugin {
     pub aurora_settings: AuroraSettings,
-}
-impl Default for AuroraPlugin {
-    fn default() -> Self {
-        Self {
-            aurora_settings: Default::default(),
-        }
-    }
 }
 
 impl Plugin for AuroraPlugin {
@@ -68,11 +62,8 @@ impl Plugin for AuroraPlugin {
 }
 
 fn aurora_follow_camera(
-    primary_cameras: Query<
-        (&Transform, &Camera, &Projection),
-        (Without<AuroraCameraTag>, With<SkyboxMagnetTag>),
-    >,
-    mut aurora_cameras: Query<(&mut Transform, &Camera, &mut Projection), With<AuroraCameraTag>>,
+    primary_cameras: Query<(&Transform, &Camera, &Projection), OnlySkyboxMagnet>,
+    mut aurora_cameras: Query<(&mut Transform, &Camera, &mut Projection), OnlyAuroraCameraTag>,
     mut aurora_mesh: Query<&mut Transform, (Without<Camera>, With<MeshMaterial3d<AuroraMaterial>>)>,
 ) {
     // find active camera TODO: IDENTIFY THE CORRECT CAMERA BETTER

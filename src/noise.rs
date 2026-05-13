@@ -375,7 +375,7 @@ fn voronoi3(p: Vec3) -> f32 {
 fn hash33(p: Vec3) -> Vec3 {
     let mut p3 = (p * vec3(0.1031, 0.1030, 0.0973)).fract();
     p3 += Vec3::dot(p3, p3.yxz() + 33.33);
-    return ((p3.xxy() + p3.yxx()) * p3.zyx()).fract();
+    ((p3.xxy() + p3.yxx()) * p3.zyx()).fract()
 }
 
 /// file data of noise textures to avoid slow noise generation
@@ -435,7 +435,7 @@ pub fn save_noise(dir: &str, file_name: &str, asset: &NoiseTextureAsset) {
         );
     }
 
-    match bincode::serde::encode_to_vec(&asset, bincode::config::standard()) {
+    match bincode::serde::encode_to_vec(asset, bincode::config::standard()) {
         Ok(bytes) => {
             let file_path = path_relative_to_bevy_exe(format!("{}{}", dir, file_name).as_str());
             if let Err(err) = std::fs::write(&file_path, bytes) {

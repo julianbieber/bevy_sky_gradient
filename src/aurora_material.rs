@@ -6,9 +6,7 @@ use bevy::render::render_resource::{
 };
 use bevy::shader::ShaderRef;
 
-use crate::bind_groups::AuroraBindGroup;
-
-#[derive(Asset, AsBindGroup, Reflect, Debug, Clone)]
+#[derive(Asset, AsBindGroup, Reflect, Debug, Clone, Default)]
 pub struct AuroraMaterial {
     #[uniform(0)]
     pub aurora_settings: crate::bind_groups::AuroraBindGroup,
@@ -38,14 +36,5 @@ impl Material for AuroraMaterial {
         }
 
         Ok(())
-    }
-}
-
-impl Default for AuroraMaterial {
-    fn default() -> Self {
-        AuroraMaterial {
-            aurora_settings: AuroraBindGroup::default(),
-            noise3_image: Handle::default(),
-        }
     }
 }

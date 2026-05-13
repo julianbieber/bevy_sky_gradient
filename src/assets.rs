@@ -36,7 +36,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &SKY_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/full_sky.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", SKY_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", SKY_SHADER_PATH)),
             "bevy_sky_gradient/shaders/full_sky.wgsl",
         ),
     );
@@ -44,7 +44,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &GRADIENT_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/gradient.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", GRADIENT_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", GRADIENT_SHADER_PATH)),
             "bevy_sky_gradient/shaders/gradient.wgsl",
         ),
     );
@@ -52,9 +52,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &FULL_GRADIENT_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/full_gradient.wgsl").into())
-                .expect(
-                    format!("'{}' shader is not valid UTF-8", FULL_GRADIENT_SHADER_PATH).as_str(),
-                ),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", FULL_GRADIENT_SHADER_PATH)),
             "bevy_sky_gradient/shaders/full_gradient.wgsl",
         ),
     );
@@ -62,16 +60,14 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &AURORA_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/aurora.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", AURORA_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", AURORA_SHADER_PATH)),
             "bevy_sky_gradient/shaders/aurora.wgsl",
         ),
     );
     let _result = shaders.insert(
         &FULL_AURORA_SHADER_HANDLE,
         Shader::from_wgsl(
-            String::from_utf8(include_bytes!("../assets/shaders/full_aurora.wgsl").into()).expect(
-                format!("'{}' shader is not valid UTF-8", FULL_AURORA_SHADER_PATH).as_str(),
-            ),
+            String::from_utf8(include_bytes!("../assets/shaders/full_aurora.wgsl").into()).unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", FULL_AURORA_SHADER_PATH)),
             "bevy_sky_gradient/shaders/full_aurora.wgsl",
         ),
     );
@@ -79,7 +75,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &STARS_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/stars.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", STARS_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", STARS_SHADER_PATH)),
             "bevy_sky_gradient/shaders/stars.wgsl",
         ),
     );
@@ -87,7 +83,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &SUN_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/sun.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", SUN_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", SUN_SHADER_PATH)),
             "bevy_sky_gradient/shaders/sun.wgsl",
         ),
     );
@@ -95,7 +91,7 @@ pub fn initialize_shaders(mut shaders: ResMut<Assets<Shader>>) {
         &NOISE_SHADER_HANDLE,
         Shader::from_wgsl(
             String::from_utf8(include_bytes!("../assets/shaders/noise.wgsl").into())
-                .expect(format!("'{}' shader is not valid UTF-8", NOISE_SHADER_PATH).as_str()),
+                .unwrap_or_else(|_| panic!("'{}' shader is not valid UTF-8", NOISE_SHADER_PATH)),
             "bevy_sky_gradient/shaders/noise.wgsl",
         ),
     );

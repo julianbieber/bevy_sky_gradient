@@ -6,11 +6,11 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, Reflect, ShaderType)]
 pub struct GradientBindGroup {
-    ///! the colors of sky
+    /// the colors of sky
     pub color_stops: [Vec4; 4],
-    ///! where the color gradients are positioned
+    /// where the color gradients are positioned
     pub positions: Vec4,
-    ///! how many sky colors to make gradient of (max 4)
+    /// how many sky colors to make gradient of (max 4)
     pub num_stops: u32,
 }
 
@@ -33,7 +33,7 @@ impl Default for GradientBindGroup {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, Reflect, ShaderType)]
 pub struct StarsBindGroup {
-    ///! how fast to rotate sky per sec in radians
+    /// how fast to rotate sky per sec in radians
     pub sky_rotation_speed: f32,
     pub sample_scale: f32,
     pub star_threshold: f32,

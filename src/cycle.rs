@@ -5,19 +5,12 @@ use crate::sky_material::FullSkyMaterial;
 /// introduce a sky timer that our SunDriver+GradientDriver
 /// can use to animate the sky over time
 #[derive(Clone)]
+#[derive(Default)]
 pub struct SkyCyclePlugin {
     pub sky_time_settings: SkyTimeSettings,
     pub sky_time: SkyTime,
 }
 
-impl Default for SkyCyclePlugin {
-    fn default() -> Self {
-        Self {
-            sky_time_settings: SkyTimeSettings::default(),
-            sky_time: SkyTime::default(),
-        }
-    }
-}
 
 impl Plugin for SkyCyclePlugin {
     fn build(&self, app: &mut App) {

@@ -9,7 +9,7 @@ use std::cmp::Ordering;
 /// gradient stops 0.0 -> 0.5 = DAY time colors
 /// gradient stops 0.5 -> 1.0 = NIGHT time colors
 /// Use the SkyColorsBuilder to easily construct the colors from variables like: day_color, night_color
-#[derive(Resource)]
+#[derive(Resource, Default)]
 pub struct SkyGradients {
     pub sky_color0: Gradient,
     pub sky_color1: Gradient,
@@ -36,18 +36,7 @@ impl Clone for SkyGradients {
     }
 }
 
-impl Default for SkyGradients {
-    fn default() -> Self {
-        Self {
-            sky_color0: Default::default(),
-            sky_color1: Default::default(),
-            sky_color2: Default::default(),
-            sky_color3: Default::default(),
-        }
-    }
-}
-
-///! day/night time specific colors mapped onto a gradient from SkyTimeSettings
+/// day/night time specific colors mapped onto a gradient from SkyTimeSettings
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Reflect)]
 pub struct GradientBuilder {
@@ -103,16 +92,16 @@ impl SkyGradientBuilder {
         SkyGradients {
             sky_color0: self
                 .gradient_builder_stop0
-                .build_gradient(&sky_time_settings),
+                .build_gradient(sky_time_settings),
             sky_color1: self
                 .gradient_builder_stop1
-                .build_gradient(&sky_time_settings),
+                .build_gradient(sky_time_settings),
             sky_color2: self
                 .gradient_builder_stop2
-                .build_gradient(&sky_time_settings),
+                .build_gradient(sky_time_settings),
             sky_color3: self
                 .gradient_builder_stop3
-                .build_gradient(&sky_time_settings),
+                .build_gradient(sky_time_settings),
         }
     }
 }
