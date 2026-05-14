@@ -88,6 +88,54 @@ impl Default for SkyGradientBuilder {
 }
 
 impl SkyGradientBuilder {
+    pub fn with_multiply_stop0(mut self, f: u8) -> Self {
+        self.gradient_builder_stop0.sunrise_color[0] *= f;
+        self.gradient_builder_stop0.sunrise_color[1] *= f;
+        self.gradient_builder_stop0.sunrise_color[2] *= f;
+        self
+    }
+    pub fn with_multiply_stop1(mut self, f: u8) -> Self {
+        self.gradient_builder_stop1.sunrise_color[0] *= f;
+        self.gradient_builder_stop1.sunrise_color[1] *= f;
+        self.gradient_builder_stop1.sunrise_color[2] *= f;
+        self
+    }
+    pub fn with_multiply_stop2(mut self, f: u8) -> Self {
+        self.gradient_builder_stop2.sunrise_color[0] *= f;
+        self.gradient_builder_stop2.sunrise_color[1] *= f;
+        self.gradient_builder_stop2.sunrise_color[2] *= f;
+        self
+    }
+    pub fn with_multiply_stop3(mut self, f: u8) -> Self {
+        self.gradient_builder_stop3.sunrise_color[0] *= f;
+        self.gradient_builder_stop3.sunrise_color[1] *= f;
+        self.gradient_builder_stop3.sunrise_color[2] *= f;
+        self
+    }
+    pub fn with_div_stop0(mut self, f: u8) -> Self {
+        self.gradient_builder_stop0.sunrise_color[0] /= f;
+        self.gradient_builder_stop0.sunrise_color[1] /= f;
+        self.gradient_builder_stop0.sunrise_color[2] /= f;
+        self
+    }
+    pub fn with_div_stop1(mut self, f: u8) -> Self {
+        self.gradient_builder_stop1.sunrise_color[0] /= f;
+        self.gradient_builder_stop1.sunrise_color[1] /= f;
+        self.gradient_builder_stop1.sunrise_color[2] /= f;
+        self
+    }
+    pub fn with_div_stop2(mut self, f: u8) -> Self {
+        self.gradient_builder_stop2.sunrise_color[0] /= f;
+        self.gradient_builder_stop2.sunrise_color[1] /= f;
+        self.gradient_builder_stop2.sunrise_color[2] /= f;
+        self
+    }
+    pub fn with_div_stop3(mut self, f: u8) -> Self {
+        self.gradient_builder_stop3.sunrise_color[0] /= f;
+        self.gradient_builder_stop3.sunrise_color[1] /= f;
+        self.gradient_builder_stop3.sunrise_color[2] /= f;
+        self
+    }
     pub fn build(&self, sky_time_settings: &SkyTimeSettings) -> SkyGradients {
         SkyGradients {
             sky_color0: self

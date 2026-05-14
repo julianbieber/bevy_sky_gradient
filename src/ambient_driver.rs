@@ -41,13 +41,11 @@ impl ScalarGradientBuilder {
 }
 
 /// the current ambient colors
-#[derive(Resource, Clone)]
-#[derive(Default)]
+#[derive(Resource, Clone, Default)]
 pub struct AmbientColors {
     pub color_gradient: Gradient,
     pub brightness_gradient: ScalarGradient,
 }
-
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Resource, Reflect, Clone)]
@@ -104,13 +102,11 @@ impl AmbientColorsBuilder {
 }
 
 /// Plugin that drives ambient lighting based on sky time
-#[derive(Clone)]
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct AmbientDriverPlugin {
     pub ambient_colors_builder: AmbientColorsBuilder,
     pub ambient_settings: AmbientSettings,
 }
-
 
 impl Plugin for AmbientDriverPlugin {
     fn build(&self, app: &mut App) {

@@ -19,6 +19,7 @@ pub struct SunDriverTag;
 pub struct SunSettings {
     pub illuminance: f32,
     pub sun_color: Vec4,
+    pub sun_light_color: Color,
     pub sun_strength: f32,
     pub sun_sharpness: f32,
 }
@@ -30,6 +31,7 @@ impl Default for SunSettings {
             sun_color: Vec4::new(1.0, 1.0, 0.5, 1.0),
             sun_strength: 1.5,
             sun_sharpness: 364.0,
+            sun_light_color: Color::Srgba(WHITE),
         }
     }
 }
@@ -61,12 +63,12 @@ impl Plugin for SunDriverPlugin {
         }
     }
 }
-fn spawn_default_sun(mut commands: Commands) {
+fn spawn_default_sun(mut commands: Commands, sun_settings: Res<SunSettings>) {
     commands.spawn((
         Name::new("sky_gradient_sun"),
         DirectionalLight {
-            color: WHITE.into(),
-            illuminance: AMBIENT_DAYLIGHT,
+            color: sun_settings.sun_light_color,
+            illuminance: sun_settings.illuminance,
             shadows_enabled: true,
             ..default()
         },
