@@ -90,6 +90,17 @@ impl Default for SkyTimeSettings {
     }
 }
 
+impl SkyTime {
+    pub fn with_time(mut self, time: f32) -> Self {
+        self.time = time;
+        self
+    }
+    pub fn with_auto_tick(mut self, auto_tick: bool) -> Self {
+        self.auto_tick = auto_tick;
+        self
+    }
+}
+
 impl SkyTimeSettings {
     #[inline]
     pub fn day_percent(&self, time: f32) -> f32 {
@@ -122,6 +133,36 @@ impl SkyTimeSettings {
         self.day_time_sec + self.night_time_sec
     }
 
+    pub fn with_day_time_sec(mut self, sec: f32) -> Self {
+        self.day_time_sec = sec;
+        self
+    }
+    pub fn with_night_time_sec(mut self, sec: f32) -> Self {
+        self.night_time_sec = sec;
+        self
+    }
+    pub fn with_sunrise_time_sec(mut self, sec: f32) -> Self {
+        self.sunrise_time_sec = sec;
+        self
+    }
+    pub fn with_sunset_time_sec(mut self, sec: f32) -> Self {
+        self.sunset_time_sec = sec;
+        self
+    }
+}
+
+impl SkyCyclePlugin {
+    pub fn with_sky_time_settings(mut self, settings: SkyTimeSettings) -> Self {
+        self.sky_time_settings = settings;
+        self
+    }
+    pub fn with_sky_time(mut self, time: SkyTime) -> Self {
+        self.sky_time = time;
+        self
+    }
+}
+
+impl SkyTimeSettings {
     #[inline]
     pub fn sunrise_percent_day(&self) -> f32 {
         self.sunrise_time_sec / self.day_time_sec

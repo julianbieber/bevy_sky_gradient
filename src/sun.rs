@@ -36,6 +36,29 @@ impl Default for SunSettings {
     }
 }
 
+impl SunSettings {
+    pub fn with_illuminance(mut self, illuminance: f32) -> Self {
+        self.illuminance = illuminance;
+        self
+    }
+    pub fn with_sun_color(mut self, color: Vec4) -> Self {
+        self.sun_color = color;
+        self
+    }
+    pub fn with_sun_light_color(mut self, color: Color) -> Self {
+        self.sun_light_color = color;
+        self
+    }
+    pub fn with_sun_strength(mut self, strength: f32) -> Self {
+        self.sun_strength = strength;
+        self
+    }
+    pub fn with_sun_sharpness(mut self, sharpness: f32) -> Self {
+        self.sun_sharpness = sharpness;
+        self
+    }
+}
+
 /// "Drives" a sun light source
 /// and updates the sun values of full_sky material
 #[derive(Clone)]
@@ -50,6 +73,17 @@ impl Default for SunDriverPlugin {
             spawn_default_sun_light: true,
             sun_settings: SunSettings::default(),
         }
+    }
+}
+
+impl SunDriverPlugin {
+    pub fn with_spawn_default_sun_light(mut self, spawn: bool) -> Self {
+        self.spawn_default_sun_light = spawn;
+        self
+    }
+    pub fn with_sun_settings(mut self, settings: SunSettings) -> Self {
+        self.sun_settings = settings;
+        self
     }
 }
 

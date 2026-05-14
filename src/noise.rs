@@ -20,6 +20,13 @@ pub struct NoisePlugin {
     pub noise_settings: NoiseSettings,
 }
 
+impl NoisePlugin {
+    pub fn with_noise_settings(mut self, settings: NoiseSettings) -> Self {
+        self.noise_settings = settings;
+        self
+    }
+}
+
 impl Plugin for NoisePlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.noise_settings.clone());
@@ -64,6 +71,26 @@ impl Default for NoiseSettings {
             #[cfg(feature = "serde")]
             cache_textures_locally: true,
         }
+    }
+}
+
+impl NoiseSettings {
+    pub fn with_noise_texture_size(mut self, size: u32) -> Self {
+        self.noise_texture_size = size;
+        self
+    }
+    pub fn with_voronoi_texture_size(mut self, size: u32) -> Self {
+        self.voronoi_texture_size = size;
+        self
+    }
+    pub fn with_noise_size_limit(mut self, limit: Option<u32>) -> Self {
+        self.noise_size_limit = limit;
+        self
+    }
+    #[cfg(feature = "serde")]
+    pub fn with_cache_textures_locally(mut self, cache: bool) -> Self {
+        self.cache_textures_locally = cache;
+        self
     }
 }
 

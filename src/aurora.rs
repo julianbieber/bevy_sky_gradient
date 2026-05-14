@@ -38,9 +38,31 @@ impl Default for AuroraSettings {
     }
 }
 
+impl AuroraSettings {
+    pub fn with_render_texture_percent(mut self, percent: f32) -> Self {
+        self.render_texture_percent = percent;
+        self
+    }
+    pub fn with_camera_render_layers(mut self, layers: RenderLayers) -> Self {
+        self.camera_render_layers = layers;
+        self
+    }
+    pub fn with_camera_order(mut self, order: isize) -> Self {
+        self.camera_order = order;
+        self
+    }
+}
+
 #[derive(Clone, Default)]
 pub struct AuroraPlugin {
     pub aurora_settings: AuroraSettings,
+}
+
+impl AuroraPlugin {
+    pub fn with_aurora_settings(mut self, settings: AuroraSettings) -> Self {
+        self.aurora_settings = settings;
+        self
+    }
 }
 
 impl Plugin for AuroraPlugin {

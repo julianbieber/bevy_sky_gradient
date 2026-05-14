@@ -1,271 +1,127 @@
-use crate::cycle::SkyTimeSettings;
 use bevy::prelude::*;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use std::cmp::Ordering;
 
-/// All the current colors that controlls the sky gradient
-/// a sky gradient has 4 colors, and we animate it based upon the "sky time"
-/// gradient stops 0.0 -> 0.5 = DAY time colors
-/// gradient stops 0.5 -> 1.0 = NIGHT time colors
-/// Use the SkyColorsBuilder to easily construct the colors from variables like: day_color, night_color
-#[derive(Resource, Default)]
-pub struct SkyGradients {
-    pub sky_color0: Gradient,
-    pub sky_color1: Gradient,
-    pub sky_color2: Gradient,
-    pub sky_color3: Gradient,
+use crate::bind_groups::GradientBindGroup;
+use crate::cycle::SkyTimeSettings;
+
+/// Simple palette parameters for cosine-based color generation.
+/// The palette function: `a + b * cos(2*pi * (c * t + d))`
+/// where t is the normalized position (0.0 to 1.0).
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[derive(Resource, Clone, Debug, Reflect)]
+pub struct SkyPalette {
+    /// Base color offset
+    pub a: Vec3,
+    /// Amplitude of color variation
+    pub b: Vec3,
+    /// Frequency of color oscillation
+    pub c: Vec3,
+    /// Phase shift
+    pub d: Vec3,
 }
 
-impl Clone for SkyGradients {
-    fn clone(&self) -> Self {
-        Self {
-            sky_color0: Gradient {
-                stops: self.sky_color0.stops.clone(),
-            },
-            sky_color1: Gradient {
-                stops: self.sky_color1.stops.clone(),
-            },
-            sky_color2: Gradient {
-                stops: self.sky_color2.stops.clone(),
-            },
-            sky_color3: Gradient {
-                stops: self.sky_color3.stops.clone(),
-            },
+impl SkyPalette {
+    /// Convert to a GradientBindGroup for use in materials
+    pub fn to_bind_group(&self) -> GradientBindGroup {
+        GradientBindGroup {
+            a: self.a,
+            b: self.b,
+            c: self.c,
+            d: self.d,
         }
     }
 }
 
-/// day/night time specific colors mapped onto a gradient from SkyTimeSettings
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Reflect)]
-pub struct GradientBuilder {
-    pub sunrise_color: [u8; 4],
-    pub day_low_color: [u8; 4],
-    pub day_high_color: [u8; 4],
-    pub sunset_color: [u8; 4],
-    pub night_low_color: [u8; 4],
-    pub night_high_color: [u8; 4],
-}
-
-impl GradientBuilder {
-    pub fn build_gradient(&self, s: &SkyTimeSettings) -> Gradient {
-        let sunrise_end = s.sunrise_percent_day() * 0.5;
-        let sunset_start = 0.5 - s.sunset_percent_day() * 0.5;
-        let sunset_end = 0.5 + s.sunset_percent_night() * 0.5;
-        let sunrise_start = 1.0 - s.sunrise_percent_night() * 0.5;
-
-        Gradient::new(vec![
-            (0.0, self.sunrise_color),
-            (sunrise_end, self.day_low_color),
-            ((sunrise_end + sunset_start) * 0.5, self.day_high_color),
-            (sunset_start, self.day_low_color),
-            (0.5, self.sunset_color),
-            (sunset_end, self.night_low_color),
-            ((sunset_end + sunrise_start) * 0.5, self.night_high_color),
-            (sunrise_start, self.night_low_color),
-            (1.0, self.sunrise_color),
-        ])
+impl Default for SkyPalette {
+    fn default() -> Self {
+        Self {
+            // Nice sky blue gradient
+            a: Vec3::new(0.5, 0.6, 0.8),
+            b: Vec3::new(0.1, 0.1, 0.2),
+            c: Vec3::new(1.0, 1.0, 1.0),
+            d: Vec3::new(0.0, 0.0, 0.0),
+        }
     }
 }
 
-/// helper for designing gradients based upon time settings
-/// if we want specific time of day colors. like "day_high_color"
-/// the helper helps distribute these colors over a gradient based upon the SkyTimeSettings
+impl SkyPalette {
+    pub fn with_a(mut self, a: Vec3) -> Self {
+        self.a = a;
+        self
+    }
+    pub fn with_b(mut self, b: Vec3) -> Self {
+        self.b = b;
+        self
+    }
+    pub fn with_c(mut self, c: Vec3) -> Self {
+        self.c = c;
+        self
+    }
+    pub fn with_d(mut self, d: Vec3) -> Self {
+        self.d = d;
+        self
+    }
+}
+
+/// Builder for sky palettes that can animate based on time of day.
+/// Uses separate palettes for day and night, with smooth transitions.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Resource)]
-pub struct SkyGradientBuilder {
-    pub gradient_builder_stop0: GradientBuilder,
-    pub gradient_builder_stop1: GradientBuilder,
-    pub gradient_builder_stop2: GradientBuilder,
-    pub gradient_builder_stop3: GradientBuilder,
+pub struct SkyPaletteBuilder {
+    /// Palette used during day time (roughly t = 0.0 to 0.5)
+    pub day: SkyPalette,
+    /// Palette used during night time (roughly t = 0.5 to 1.0)
+    pub night: SkyPalette,
 }
 
-impl Default for SkyGradientBuilder {
+impl Default for SkyPaletteBuilder {
     fn default() -> Self {
-        crate::presets::DEFAULT_SKY_COLORS_BUILDER
-    }
-}
-
-impl SkyGradientBuilder {
-    pub fn with_multiply_stop0(mut self, f: u8) -> Self {
-        self.gradient_builder_stop0.sunrise_color[0] *= f;
-        self.gradient_builder_stop0.sunrise_color[1] *= f;
-        self.gradient_builder_stop0.sunrise_color[2] *= f;
-        self
-    }
-    pub fn with_multiply_stop1(mut self, f: u8) -> Self {
-        self.gradient_builder_stop1.sunrise_color[0] *= f;
-        self.gradient_builder_stop1.sunrise_color[1] *= f;
-        self.gradient_builder_stop1.sunrise_color[2] *= f;
-        self
-    }
-    pub fn with_multiply_stop2(mut self, f: u8) -> Self {
-        self.gradient_builder_stop2.sunrise_color[0] *= f;
-        self.gradient_builder_stop2.sunrise_color[1] *= f;
-        self.gradient_builder_stop2.sunrise_color[2] *= f;
-        self
-    }
-    pub fn with_multiply_stop3(mut self, f: u8) -> Self {
-        self.gradient_builder_stop3.sunrise_color[0] *= f;
-        self.gradient_builder_stop3.sunrise_color[1] *= f;
-        self.gradient_builder_stop3.sunrise_color[2] *= f;
-        self
-    }
-    pub fn with_div_stop0(mut self, f: u8) -> Self {
-        self.gradient_builder_stop0.sunrise_color[0] /= f;
-        self.gradient_builder_stop0.sunrise_color[1] /= f;
-        self.gradient_builder_stop0.sunrise_color[2] /= f;
-        self
-    }
-    pub fn with_div_stop1(mut self, f: u8) -> Self {
-        self.gradient_builder_stop1.sunrise_color[0] /= f;
-        self.gradient_builder_stop1.sunrise_color[1] /= f;
-        self.gradient_builder_stop1.sunrise_color[2] /= f;
-        self
-    }
-    pub fn with_div_stop2(mut self, f: u8) -> Self {
-        self.gradient_builder_stop2.sunrise_color[0] /= f;
-        self.gradient_builder_stop2.sunrise_color[1] /= f;
-        self.gradient_builder_stop2.sunrise_color[2] /= f;
-        self
-    }
-    pub fn with_div_stop3(mut self, f: u8) -> Self {
-        self.gradient_builder_stop3.sunrise_color[0] /= f;
-        self.gradient_builder_stop3.sunrise_color[1] /= f;
-        self.gradient_builder_stop3.sunrise_color[2] /= f;
-        self
-    }
-    pub fn build(&self, sky_time_settings: &SkyTimeSettings) -> SkyGradients {
-        SkyGradients {
-            sky_color0: self
-                .gradient_builder_stop0
-                .build_gradient(sky_time_settings),
-            sky_color1: self
-                .gradient_builder_stop1
-                .build_gradient(sky_time_settings),
-            sky_color2: self
-                .gradient_builder_stop2
-                .build_gradient(sky_time_settings),
-            sky_color3: self
-                .gradient_builder_stop3
-                .build_gradient(sky_time_settings),
+        Self {
+            day: SkyPalette {
+                a: Vec3::new(0.4, 0.7, 1.0),
+                b: Vec3::new(0.2, 0.1, 0.1),
+                c: Vec3::new(1.0, 1.0, 1.0),
+                d: Vec3::new(0.0, 0.0, 0.0),
+            },
+            night: SkyPalette {
+                a: Vec3::new(0.0, 0.05, 0.2),
+                b: Vec3::new(0.05, 0.0, 0.1),
+                c: Vec3::new(1.0, 1.0, 1.0),
+                d: Vec3::new(0.0, 0.0, 0.0),
+            },
         }
     }
 }
 
-/// A color gradient with linear interpolation.
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Debug, PartialEq, Reflect)]
-pub struct Gradient {
-    pub stops: Vec<(f32, [u8; 4])>,
-}
-
-impl Gradient {
-    /// Create a new gradient. Stops are automatically sorted by position.
-    pub fn new(mut stops: Vec<(f32, [u8; 4])>) -> Self {
-        stops.sort_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap_or(Ordering::Equal));
-        Self { stops }
-    }
-
-    /// Sort the stops. Call this if you manually modify the `stops` vector.
-    pub fn sort(&mut self) {
-        self.stops
-            .sort_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap_or(Ordering::Equal));
-    }
-
-    /// Sample the gradient at position `t` (0.0 to 1.0).
-    /// Returns a normalized color [f32; 4] where channels are 0.0 to 1.0.
-    pub fn sample_at(&self, t: f32) -> [f32; 4] {
-        if self.stops.is_empty() {
-            return [0.0, 0.0, 0.0, 1.0];
+impl SkyPaletteBuilder {
+    /// Sample the palette at a given time, blending between day and night.
+    /// 
+    /// The time is converted using SkyTimeSettings::time_percent():
+    /// - 0.0 to ~0.5: day (sunrise -> day -> sunset)
+    /// - ~0.5 to 1.0: night (sunset -> night -> sunrise)
+    pub fn sample(&self, time: f32, sky_time_settings: &SkyTimeSettings) -> SkyPalette {
+        // Get time percent (0.0 to 1.0) that accounts for day/night cycle settings
+        let t = sky_time_settings.time_percent(time);
+        
+        // Calculate blend factor: 0.0 = full day, 1.0 = full night
+        // Day is 0.0 to 0.5, Night is 0.5 to 1.0
+        let blend = (t - 0.5).clamp(0.0, 0.5) * 2.0;
+        
+        SkyPalette {
+            a: self.day.a.lerp(self.night.a, blend),
+            b: self.day.b.lerp(self.night.b, blend),
+            c: self.day.c.lerp(self.night.c, blend),
+            d: self.day.d.lerp(self.night.d, blend),
         }
-
-        // Find insertion point
-        let idx = self.stops.partition_point(|(x, _)| *x < t);
-
-        // Helper to convert u8 [0-255] to f32 [0.0-1.0]
-        let to_f32 = |c: [u8; 4]| {
-            [
-                c[0] as f32 / 255.0,
-                c[1] as f32 / 255.0,
-                c[2] as f32 / 255.0,
-                c[3] as f32 / 255.0,
-            ]
-        };
-        if idx == 0 {
-            return to_f32(self.stops[0].1);
-        }
-        if idx >= self.stops.len() {
-            return to_f32(self.stops.last().unwrap().1);
-        }
-        let (t0, c0_u8) = self.stops[idx - 1];
-        let (t1, c1_u8) = self.stops[idx];
-        let c0 = to_f32(c0_u8);
-        let c1 = to_f32(c1_u8);
-        // Linear interpolation
-        let ratio = ((t - t0) / (t1 - t0)).clamp(0.0, 1.0);
-        let lerp = |a: f32, b: f32| a + (b - a) * ratio;
-
-        [
-            lerp(c0[0], c1[0]),
-            lerp(c0[1], c1[1]),
-            lerp(c0[2], c1[2]),
-            lerp(c0[3], c1[3]),
-        ]
-    }
-}
-
-impl Default for Gradient {
-    fn default() -> Self {
-        Self::new(vec![(0.0, [0, 0, 0, 255]), (1.0, [255, 255, 255, 255])])
-    }
-}
-
-/// A scalar gradient with linear interpolation for single float values.
-/// More memory efficient than Gradient when you only need one channel.
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Clone, Debug, PartialEq, Reflect)]
-pub struct ScalarGradient {
-    pub stops: Vec<(f32, f32)>,
-}
-
-impl ScalarGradient {
-    /// Create a new scalar gradient. Stops are automatically sorted by position.
-    pub fn new(mut stops: Vec<(f32, f32)>) -> Self {
-        stops.sort_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap_or(Ordering::Equal));
-        Self { stops }
     }
 
-    /// Sort the stops. Call this if you manually modify the `stops` vector.
-    pub fn sort(&mut self) {
-        self.stops
-            .sort_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap_or(Ordering::Equal));
+    pub fn with_day(mut self, day: SkyPalette) -> Self {
+        self.day = day;
+        self
     }
-
-    /// Sample the gradient at position `t` (0.0 to 1.0).
-    pub fn sample_at(&self, t: f32) -> f32 {
-        if self.stops.is_empty() {
-            return 0.0;
-        }
-        let idx = self.stops.partition_point(|(x, _)| *x < t);
-        if idx == 0 {
-            return self.stops[0].1;
-        }
-        if idx >= self.stops.len() {
-            return self.stops.last().unwrap().1;
-        }
-
-        let (t0, v0) = self.stops[idx - 1];
-        let (t1, v1) = self.stops[idx];
-        // Linear interpolation
-        let ratio = ((t - t0) / (t1 - t0)).clamp(0.0, 1.0);
-        v0 + (v1 - v0) * ratio
-    }
-}
-
-impl Default for ScalarGradient {
-    fn default() -> Self {
-        Self::new(vec![(0.0, 0.0), (1.0, 1.0)])
+    pub fn with_night(mut self, night: SkyPalette) -> Self {
+        self.night = night;
+        self
     }
 }

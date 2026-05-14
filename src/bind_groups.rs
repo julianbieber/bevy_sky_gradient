@@ -6,27 +6,44 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug, Reflect, ShaderType)]
 pub struct GradientBindGroup {
-    /// the colors of sky
-    pub color_stops: [Vec4; 4],
-    /// where the color gradients are positioned
-    pub positions: Vec4,
-    /// how many sky colors to make gradient of (max 4)
-    pub num_stops: u32,
+    /// cosine palette parameter: base color offset
+    pub a: Vec3,
+    /// cosine palette parameter: amplitude of color variation
+    pub b: Vec3,
+    /// cosine palette parameter: frequency of color oscillation
+    pub c: Vec3,
+    /// cosine palette parameter: phase shift
+    pub d: Vec3,
 }
 
 impl Default for GradientBindGroup {
     fn default() -> Self {
-        let color_stops = [
-            Vec4::new(0.2, 0.3, 0.6, 1.0),
-            Vec4::new(0.4, 0.5, 1.0, 1.0),
-            Vec4::new(0.35, 0.6, 0.8, 1.0),
-            Vec4::new(0.5, 0.7, 1.0, 1.0),
-        ];
+        // Nice sky blue palette using cosine function: a + b*cos(2*pi*(c*t+d))
         GradientBindGroup {
-            color_stops,
-            positions: Vec4::new(0.38, 0.47, 0.61, 1.0),
-            num_stops: 4,
+            a: Vec3::new(0.5, 0.6, 0.8),
+            b: Vec3::new(0.1, 0.1, 0.2),
+            c: Vec3::new(1.0, 1.0, 1.0),
+            d: Vec3::new(0.0, 0.0, 0.0),
         }
+    }
+}
+
+impl GradientBindGroup {
+    pub fn with_a(mut self, a: Vec3) -> Self {
+        self.a = a;
+        self
+    }
+    pub fn with_b(mut self, b: Vec3) -> Self {
+        self.b = b;
+        self
+    }
+    pub fn with_c(mut self, c: Vec3) -> Self {
+        self.c = c;
+        self
+    }
+    pub fn with_d(mut self, d: Vec3) -> Self {
+        self.d = d;
+        self
     }
 }
 
@@ -59,6 +76,41 @@ impl Default for StarsBindGroup {
     }
 }
 
+impl StarsBindGroup {
+    pub fn with_sky_rotation_speed(mut self, speed: f32) -> Self {
+        self.sky_rotation_speed = speed;
+        self
+    }
+    pub fn with_sample_scale(mut self, scale: f32) -> Self {
+        self.sample_scale = scale;
+        self
+    }
+    pub fn with_star_threshold(mut self, threshold: f32) -> Self {
+        self.star_threshold = threshold;
+        self
+    }
+    pub fn with_star_threshold_blink(mut self, threshold: f32) -> Self {
+        self.star_threshold_blink = threshold;
+        self
+    }
+    pub fn with_blink_speed(mut self, speed: f32) -> Self {
+        self.blink_speed = speed;
+        self
+    }
+    pub fn with_mask_scale(mut self, scale: f32) -> Self {
+        self.mask_scale = scale;
+        self
+    }
+    pub fn with_mask_threshold(mut self, threshold: f32) -> Self {
+        self.mask_threshold = threshold;
+        self
+    }
+    pub fn with_blink_variance_scale(mut self, scale: f32) -> Self {
+        self.blink_variance_scale = scale;
+        self
+    }
+}
+
 #[derive(Clone, Debug, Reflect, ShaderType)]
 pub struct SunBindGroup {
     pub sun_dir: Vec3,
@@ -75,6 +127,25 @@ impl Default for SunBindGroup {
             sun_strength: 1.5,
             sun_sharpness: 164.0,
         }
+    }
+}
+
+impl SunBindGroup {
+    pub fn with_sun_dir(mut self, dir: Vec3) -> Self {
+        self.sun_dir = dir;
+        self
+    }
+    pub fn with_sun_color(mut self, color: Vec4) -> Self {
+        self.sun_color = color;
+        self
+    }
+    pub fn with_sun_strength(mut self, strength: f32) -> Self {
+        self.sun_strength = strength;
+        self
+    }
+    pub fn with_sun_sharpness(mut self, sharpness: f32) -> Self {
+        self.sun_sharpness = sharpness;
+        self
     }
 }
 
@@ -131,5 +202,96 @@ impl Default for AuroraBindGroup {
             undersparkle_height: 0.3,
             opacity_per_sample: 0.18,
         }
+    }
+}
+
+impl AuroraBindGroup {
+    pub fn with_color_bottom(mut self, color: LinearRgba) -> Self {
+        self.color_bottom = color;
+        self
+    }
+    pub fn with_color_top(mut self, color: LinearRgba) -> Self {
+        self.color_top = color;
+        self
+    }
+    pub fn with_alpha(mut self, alpha: f32) -> Self {
+        self.alpha = alpha;
+        self
+    }
+    pub fn with_density(mut self, density: f32) -> Self {
+        self.density = density;
+        self
+    }
+    pub fn with_sharpness(mut self, sharpness: f32) -> Self {
+        self.sharpness = sharpness;
+        self
+    }
+    pub fn with_num_samples(mut self, samples: i32) -> Self {
+        self.num_samples = samples;
+        self
+    }
+    pub fn with_start_height(mut self, height: f32) -> Self {
+        self.start_height = height;
+        self
+    }
+    pub fn with_end_height(mut self, height: f32) -> Self {
+        self.end_height = height;
+        self
+    }
+    pub fn with_flow_scale(mut self, scale: f32) -> Self {
+        self.flow_scale = scale;
+        self
+    }
+    pub fn with_flow_strength(mut self, strength: f32) -> Self {
+        self.flow_strength = strength;
+        self
+    }
+    pub fn with_flow_speed(mut self, speed: f32) -> Self {
+        self.flow_speed = speed;
+        self
+    }
+    pub fn with_flow_x_speed(mut self, speed: f32) -> Self {
+        self.flow_x_speed = speed;
+        self
+    }
+    pub fn with_wiggle_scale(mut self, scale: f32) -> Self {
+        self.wiggle_scale = scale;
+        self
+    }
+    pub fn with_wiggle_strength(mut self, strength: f32) -> Self {
+        self.wiggle_strength = strength;
+        self
+    }
+    pub fn with_wiggle_speed(mut self, speed: f32) -> Self {
+        self.wiggle_speed = speed;
+        self
+    }
+    pub fn with_undersparkle_color_primary(mut self, color: LinearRgba) -> Self {
+        self.undersparkle_color_primary = color;
+        self
+    }
+    pub fn with_undersparkle_color_secondary(mut self, color: LinearRgba) -> Self {
+        self.undersparkle_color_secondary = color;
+        self
+    }
+    pub fn with_undersparkle_scale(mut self, scale: f32) -> Self {
+        self.undersparkle_scale = scale;
+        self
+    }
+    pub fn with_undersparkle_speed(mut self, speed: f32) -> Self {
+        self.undersparkle_speed = speed;
+        self
+    }
+    pub fn with_undersparkle_threshold(mut self, threshold: f32) -> Self {
+        self.undersparkle_threshold = threshold;
+        self
+    }
+    pub fn with_undersparkle_height(mut self, height: f32) -> Self {
+        self.undersparkle_height = height;
+        self
+    }
+    pub fn with_opacity_per_sample(mut self, opacity: f32) -> Self {
+        self.opacity_per_sample = opacity;
+        self
     }
 }

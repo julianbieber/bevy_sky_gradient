@@ -5,10 +5,10 @@
 #import bevy_pbr::mesh_view_bindings::globals;
 #import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_clip}
 
-#import "bevy_sky_gradient/shaders/gradient.wgsl"::{GradientSettings, gradient};
+#import "bevy_sky_gradient/shaders/gradient.wgsl"::{PaletteParams, gradient};
 
 @group(#{MATERIAL_BIND_GROUP}) @binding(0)
-var<uniform> gradient_settings: GradientSettings;
+var<uniform> palette_params: PaletteParams;
 
 struct VertexOutput {
     @builtin(position) frag_pos: vec4<f32>,
@@ -30,6 +30,6 @@ fn fragment(
     in: VertexOutput,
 ) -> @location(0) vec4<f32> {
     let view_dir = normalize(in.world_dir);
-    return gradient(view_dir, gradient_settings);
+    return gradient(view_dir, palette_params);
 }
 

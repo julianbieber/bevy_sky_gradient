@@ -50,18 +50,8 @@ impl Material for FullGradientMaterial {
 
 impl Default for FullGradientMaterial {
     fn default() -> Self {
-        let color_stops = [
-            Vec4::new(0.2, 0.3, 0.6, 1.0),
-            Vec4::new(0.4, 0.5, 1.0, 1.0),
-            Vec4::new(0.35, 0.6, 0.8, 1.0),
-            Vec4::new(0.5, 0.7, 1.0, 1.0),
-        ];
         FullGradientMaterial {
-            gradient_bind_group: GradientBindGroup {
-                color_stops,
-                positions: Vec4::new(0.38, 0.47, 0.61, 1.0),
-                num_stops: 4,
-            },
+            gradient_bind_group: GradientBindGroup::default(),
         }
     }
 }

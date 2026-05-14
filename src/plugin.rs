@@ -40,6 +40,25 @@ impl Default for SkySettings {
     }
 }
 
+impl SkySettings {
+    pub fn with_camera_gradient_order(mut self, order: isize) -> Self {
+        self.camera_gradient_order = order;
+        self
+    }
+    pub fn with_spawn_default_skybox(mut self, spawn: bool) -> Self {
+        self.spawn_default_skybox = spawn;
+        self
+    }
+    pub fn with_skybox_gradient_render_layer(mut self, layer: RenderLayers) -> Self {
+        self.skybox_gradient_render_layer = layer;
+        self
+    }
+    pub fn with_stars_bind_group(mut self, stars: StarsBindGroup) -> Self {
+        self.stars_bind_group = stars;
+        self
+    }
+}
+
 /// controlls what features you want.  
 /// you might not want to use the default Cycle/SunDriver/GradientDriver/Aurora for example
 /// then you can skip that plugin and implement your own.
@@ -143,6 +162,21 @@ impl SkyPluginBuilder {
 
     pub fn set_ambient_driver(mut self, ambient_plugin: AmbientDriverPlugin) -> Self {
         self.ambient_driver = Some(ambient_plugin);
+        self
+    }
+
+    pub fn set_camera_gradient_order(mut self, order: isize) -> Self {
+        self.settings.camera_gradient_order = order;
+        self
+    }
+
+    pub fn set_skybox_gradient_render_layer(mut self, layer: RenderLayers) -> Self {
+        self.settings.skybox_gradient_render_layer = layer;
+        self
+    }
+
+    pub fn set_stars_bind_group(mut self, stars: StarsBindGroup) -> Self {
+        self.settings.stars_bind_group = stars;
         self
     }
 }

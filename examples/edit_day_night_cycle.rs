@@ -1,15 +1,12 @@
-use bevy::{camera::visibility::RenderLayers, prelude::*};
+use bevy::prelude::*;
 use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
 use bevy_sky_gradient::{
-    ambient_driver::AmbientColorsBuilder, aurora_material::AuroraMaterial,
+    aurora_material::AuroraMaterial,
     gradient_material::FullGradientMaterial, prelude::*, sky_material::FullSkyMaterial,
 };
 
 use bevy_inspector_egui::{
-    bevy_egui::{
-        self, EguiContext, EguiGlobalSettings, EguiPlugin, EguiPrimaryContextPass,
-        PrimaryEguiContext,
-    },
+    bevy_egui::{EguiContext, EguiPlugin, EguiPrimaryContextPass, PrimaryEguiContext},
     bevy_inspector::ui_for_resource,
     egui,
     quick::{AssetInspectorPlugin, ResourceInspectorPlugin},
@@ -30,8 +27,7 @@ fn main() {
         .add_plugins(ResourceInspectorPlugin::<AuroraSettings>::default())
         .add_plugins(ResourceInspectorPlugin::<NoiseSettings>::default())
         .add_plugins(ResourceInspectorPlugin::<SkyTimeSettings>::default())
-        .add_plugins(ResourceInspectorPlugin::<AmbientSettings>::default())
-        .add_plugins(ResourceInspectorPlugin::<AmbientColorsBuilder>::default())
+
         // camera
         .add_plugins(NoCameraPlayerPlugin)
         // SKY plugin
@@ -61,7 +57,7 @@ fn main() {
                 .build(),
         )
         .add_systems(EguiPrimaryContextPass, edit_ui)
-        .add_systems(Startup, (setup, setup_egui_render_layer))
+        .add_systems(Startup, setup)
         .run();
 }
 
@@ -98,7 +94,7 @@ struct SkyPresetResult(String);
 
 fn edit_ui(mut world: &mut World) {
     let mut egui_context = world
-        .query_filtered::<&mut EguiContext, With<bevy_egui::PrimaryEguiContext>>()
+        .query_filtered::<&mut EguiContext, With<PrimaryEguiContext>>()
         .single(world)
         .expect("EguiContext not found")
         .clone();
@@ -133,7 +129,6 @@ fn edit_ui(mut world: &mut World) {
 
 #[cfg(feature = "serde")]
 fn show_save_load_preset_uis(world: &mut World, egui_context: &mut EguiContext) {
-    use bevy_sky_gradient::gradient::SkyGradientBuilder;
     use bevy_sky_gradient::presets::{ApplyPresetEvent, SkyPreset};
     use bevy_sky_gradient::utils::path_relative_to_bevy_exe;
 
@@ -163,14 +158,12 @@ fn show_save_load_preset_uis(world: &mut World, egui_context: &mut EguiContext) 
             let current_sky_material = all_sky_materials.iter().next().unwrap().1;
 
             let sun_settings = world.get_resource::<SunSettings>().unwrap();
-            let sky_colors_builder = world.get_resource::<SkyGradientBuilder>().unwrap();
             // fetch the sky information
             let sky_preset = SkyPreset {
                 aurora_settings: Some(current_aurora_material.aurora_settings.clone()),
                 sun_settings: Some(sun_settings.clone()),
-                sky_colors_builder: Some(sky_colors_builder.clone()),
-                stars: Some(current_sky_material.stars.clone()),
                 gradient_bind_group: Some(current_gradient_material.gradient_bind_group.clone()),
+                stars: Some(current_sky_material.stars.clone()),
             };
             let sky_preset = ron::ser::to_string_pretty(&sky_preset, PrettyConfig::default());
             let sky_preset = sky_preset.unwrap();
@@ -200,7 +193,7 @@ fn show_save_load_preset_uis(world: &mut World, egui_context: &mut EguiContext) 
                             Err(err) => {
                                 let mut result =
                                     world.get_resource_mut::<SkyPresetResult>().unwrap();
-                                result.0 = format!("faield to deserialize file: {:?}", err);
+                                result.0 = format!("failed to deserialize file: {:?}", err);
                             }
                         },
                         Err(err) => {
@@ -210,30 +203,16 @@ fn show_save_load_preset_uis(world: &mut World, egui_context: &mut EguiContext) 
                     }
                 }
             }
-        } else {
-            ui.label("no files inside assets/presets");
         }
 
-        let result = world.get_resource_or_insert_with(|| SkyPresetResult(String::default()));
-        ui.label(&result.0);
+        // display save/load result
+        {
+            let result = world.get_resource::<SkyPresetResult>().unwrap();
+            if !result.0.is_empty() {
+                ui.label(result.0.clone());
+            }
+        }
     });
 }
 
-// egui by default renders into the first camera it finds.
-// which happends to be our AuroraCamera lmao.
-// this ensures egui doesn't render onto our aurora. disable for some fun :)
-fn setup_egui_render_layer(
-    mut commands: Commands,
-    mut egui_global_settings: ResMut<EguiGlobalSettings>,
-) {
-    egui_global_settings.auto_create_primary_context = false;
-    commands.spawn((
-        PrimaryEguiContext,
-        Camera3d::default(),
-        Camera {
-            order: 1,
-            ..default()
-        },
-        RenderLayers::none(),
-    ));
-}
+

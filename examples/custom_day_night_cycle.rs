@@ -1,7 +1,7 @@
 use bevy::{color::palettes::css::WHITE, light::light_consts::lux::AMBIENT_DAYLIGHT, prelude::*};
 use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
 use bevy_sky_gradient::{
-    gradient::{GradientBuilder, SkyGradientBuilder},
+    gradient::SkyPaletteBuilder,
     noise::NoiseHandles,
     plugin::{AuroraTextureHandle, GradientTextureHandle},
     prelude::*,
@@ -33,12 +33,13 @@ fn main() {
                     sun_settings: SunSettings {
                         illuminance: 10000.0,
                         sun_color: vec4(1.0, 1.0, 0.0, 1.0),
+                        sun_light_color: Color::WHITE,
                         sun_strength: default(),
                         sun_sharpness: default(),
                     },
                 })
                 .set_gradient_driver(GradientDriverPlugin {
-                    sky_colors_builder: CUSTOM_SKY_COLORS_BUILDER,
+                    sky_palette_builder: CUSTOM_SKY_PALETTE_BUILDER,
                 })
                 .build(),
         )
@@ -100,37 +101,18 @@ fn setup(
     ));
 }
 
-pub const CUSTOM_SKY_COLORS_BUILDER: SkyGradientBuilder = SkyGradientBuilder {
-    gradient_builder_stop0: GradientBuilder {
-        sunrise_color: [255, 0, 0, 255],
-        day_low_color: [0, 0, 248, 255],
-        day_high_color: [0, 48, 255, 255],
-        sunset_color: [255, 70, 70, 255],
-        night_low_color: [0, 0, 0, 245],
-        night_high_color: [0, 0, 0, 245],
+// Custom sky palette with red/orange hues
+pub const CUSTOM_SKY_PALETTE_BUILDER: SkyPaletteBuilder = SkyPaletteBuilder {
+    day: bevy_sky_gradient::gradient::SkyPalette {
+        a: Vec3::new(0.3, 0.4, 0.8),
+        b: Vec3::new(0.2, 0.1, 0.1),
+        c: Vec3::new(1.0, 1.0, 1.0),
+        d: Vec3::new(0.0, 0.0, 0.0),
     },
-    gradient_builder_stop1: GradientBuilder {
-        sunrise_color: [255, 0, 0, 255],
-        day_low_color: [0, 0, 255, 255],
-        day_high_color: [0, 226, 255, 255],
-        sunset_color: [243, 84, 47, 255],
-        night_low_color: [0, 0, 0, 245],
-        night_high_color: [0, 0, 0, 245],
-    },
-    gradient_builder_stop2: GradientBuilder {
-        sunrise_color: [255, 0, 0, 255],
-        day_low_color: [0, 0, 254, 255],
-        day_high_color: [0, 170, 255, 255],
-        sunset_color: [255, 242, 72, 255],
-        night_low_color: [0, 0, 0, 245],
-        night_high_color: [0, 0, 0, 245],
-    },
-    gradient_builder_stop3: GradientBuilder {
-        sunrise_color: [255, 0, 0, 255],
-        day_low_color: [0, 0, 255, 255],
-        day_high_color: [0, 195, 255, 255],
-        sunset_color: [73, 177, 250, 255],
-        night_low_color: [0, 0, 0, 245],
-        night_high_color: [0, 0, 0, 245],
+    night: bevy_sky_gradient::gradient::SkyPalette {
+        a: Vec3::new(0.0, 0.0, 0.1),
+        b: Vec3::new(0.05, 0.0, 0.05),
+        c: Vec3::new(1.0, 1.0, 1.0),
+        d: Vec3::new(0.0, 0.0, 0.0),
     },
 };

@@ -4,57 +4,28 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     aurora_material::AuroraMaterial,
-    gradient::{GradientBuilder, SkyGradientBuilder},
+    bind_groups::GradientBindGroup,
     gradient_material::FullGradientMaterial,
     sky_material::FullSkyMaterial,
     sun::SunSettings,
 };
 
-pub const DEFAULT_SKY_COLORS_BUILDER: SkyGradientBuilder = SkyGradientBuilder {
-    gradient_builder_stop0: GradientBuilder {
-        sunset_color: [255, 70, 70, 255],
-        sunrise_color: [255, 70, 70, 255],
-        day_low_color: [157, 157, 248, 255],
-        day_high_color: [48, 48, 255, 255],
-        night_low_color: [0, 3, 40, 255],
-        night_high_color: [0, 0, 45, 255],
-    },
-    gradient_builder_stop1: GradientBuilder {
-        sunset_color: [243, 84, 47, 255],
-        sunrise_color: [243, 84, 47, 255],
-        day_low_color: [205, 242, 255, 255],
-        day_high_color: [0, 226, 255, 255],
-        night_low_color: [47, 0, 93, 255],
-        night_high_color: [0, 32, 93, 255],
-    },
-    gradient_builder_stop2: GradientBuilder {
-        sunset_color: [255, 242, 72, 255],
-        sunrise_color: [255, 242, 72, 255],
-        day_low_color: [182, 200, 254, 255],
-        day_high_color: [0, 170, 255, 255],
-        night_low_color: [0, 38, 97, 255],
-        night_high_color: [0, 0, 112, 255],
-    },
-    gradient_builder_stop3: GradientBuilder {
-        sunset_color: [73, 177, 250, 255],
-        sunrise_color: [73, 177, 250, 255],
-        day_low_color: [224, 224, 255, 255],
-        day_high_color: [66, 195, 255, 255],
-        night_low_color: [74, 0, 89, 255],
-        night_high_color: [0, 0, 43, 255],
-    },
+/// Default sky palette for the gradient material
+pub const DEFAULT_SKY_PALETTE: GradientBindGroup = GradientBindGroup {
+    a: Vec3::new(0.4, 0.7, 1.0),
+    b: Vec3::new(0.2, 0.1, 0.1),
+    c: Vec3::new(1.0, 1.0, 1.0),
+    d: Vec3::new(0.0, 0.0, 0.0),
 };
 
-/// data that controlls the look of a sky
-/// (not aurora upsampling size, nor noise 3dTexture, performance and "look" should be seperate)
+/// Data that controls the look of a sky.
 /// (None) values will not override current sky settings.
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Default)]
 pub struct SkyPreset {
-    pub gradient_bind_group: Option<crate::bind_groups::GradientBindGroup>,
+    pub gradient_bind_group: Option<GradientBindGroup>,
     pub aurora_settings: Option<crate::bind_groups::AuroraBindGroup>,
     pub sun_settings: Option<SunSettings>,
-    pub sky_colors_builder: Option<SkyGradientBuilder>,
     pub stars: Option<crate::bind_groups::StarsBindGroup>,
 }
 
@@ -81,7 +52,6 @@ pub fn handle_apply_preset_events(
     mut sky_materials: ResMut<Assets<FullSkyMaterial>>,
     mut auroras_materials: ResMut<Assets<AuroraMaterial>>,
     mut gradient_materials: ResMut<Assets<FullGradientMaterial>>,
-    mut sky_colors_builder_optional: Option<ResMut<SkyGradientBuilder>>,
     mut sun_settings_optional: Option<ResMut<SunSettings>>,
 ) {
     for event in events.read() {
@@ -89,11 +59,6 @@ pub fn handle_apply_preset_events(
             && let Some(current_sun_settings) = &mut sun_settings_optional
         {
             **current_sun_settings = new_sun_settings.clone();
-        }
-        if let Some(new_sky_colors_builder) = &event.sky_preset.sky_colors_builder
-            && let Some(current_sky_colors_builder) = sky_colors_builder_optional.as_mut()
-        {
-            **current_sky_colors_builder = new_sky_colors_builder.clone();
         }
 
         if let Some(star_settings) = &event.sky_preset.stars {
