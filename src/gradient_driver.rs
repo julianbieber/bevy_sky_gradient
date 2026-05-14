@@ -43,5 +43,9 @@ fn drive_palette(
         .expect("FullGradientMaterial");
 
     let palette = sky_palette_builder.sample(sky_time.time, &sky_time_settings);
-    skybox_material.gradient_bind_group = palette.to_bind_group();
+    let mut bind_group = palette.to_bind_group();
+    // Use day/night brightness from builder for shader interpolation
+    bind_group.brightness_day = sky_palette_builder.day.brightness;
+    bind_group.brightness_night = sky_palette_builder.night.brightness;
+    skybox_material.gradient_bind_group = bind_group;
 }

@@ -108,11 +108,13 @@ pub const CUSTOM_SKY_PALETTE_BUILDER: SkyPaletteBuilder = SkyPaletteBuilder {
         b: Vec3::new(0.2, 0.1, 0.1),
         c: Vec3::new(1.0, 1.0, 1.0),
         d: Vec3::new(0.0, 0.0, 0.0),
+        brightness: 1.2,
     },
     night: bevy_sky_gradient::gradient::SkyPalette {
         a: Vec3::new(0.0, 0.0, 0.1),
         b: Vec3::new(0.05, 0.0, 0.05),
         c: Vec3::new(1.0, 1.0, 1.0),
         d: Vec3::new(0.0, 0.0, 0.0),
+        brightness: 0.5,
     },
 };

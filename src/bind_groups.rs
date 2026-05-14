@@ -14,6 +14,10 @@ pub struct GradientBindGroup {
     pub c: Vec3,
     /// cosine palette parameter: phase shift
     pub d: Vec3,
+    /// brightness for day palette
+    pub brightness_day: f32,
+    /// brightness for night palette
+    pub brightness_night: f32,
 }
 
 impl Default for GradientBindGroup {
@@ -24,6 +28,8 @@ impl Default for GradientBindGroup {
             b: Vec3::new(0.1, 0.1, 0.2),
             c: Vec3::new(1.0, 1.0, 1.0),
             d: Vec3::new(0.0, 0.0, 0.0),
+            brightness_day: 1.0,
+            brightness_night: 1.0,
         }
     }
 }
@@ -43,6 +49,14 @@ impl GradientBindGroup {
     }
     pub fn with_d(mut self, d: Vec3) -> Self {
         self.d = d;
+        self
+    }
+    pub fn with_brightness_day(mut self, brightness: f32) -> Self {
+        self.brightness_day = brightness;
+        self
+    }
+    pub fn with_brightness_night(mut self, brightness: f32) -> Self {
+        self.brightness_night = brightness;
         self
     }
 }

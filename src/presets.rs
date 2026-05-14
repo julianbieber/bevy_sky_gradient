@@ -16,6 +16,8 @@ pub const DEFAULT_SKY_PALETTE: GradientBindGroup = GradientBindGroup {
     b: Vec3::new(0.2, 0.1, 0.1),
     c: Vec3::new(1.0, 1.0, 1.0),
     d: Vec3::new(0.0, 0.0, 0.0),
+    brightness_day: 1.0,
+    brightness_night: 1.0,
 };
 
 /// Data that controls the look of a sky.

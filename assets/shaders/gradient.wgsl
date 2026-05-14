@@ -6,6 +6,8 @@ struct PaletteParams {
     b: vec3<f32>,
     c: vec3<f32>,
     d: vec3<f32>,
+    brightness_day: f32,
+    brightness_night: f32,
 };
 
 fn palette(t: f32, params: PaletteParams) -> vec3<f32> {
@@ -17,5 +19,6 @@ fn palette(t: f32, params: PaletteParams) -> vec3<f32> {
 fn gradient(view_dir: vec3<f32>, params: PaletteParams) -> vec4<f32> {
     let t = clamp(view_dir.y * 0.5 + 0.5, 0.0, 1.0);
     let col = palette(t, params);
-    return vec4<f32>(col, 1.0);
+    let brightness = mix(params.brightness_day, params.brightness_night, t);
+    return vec4<f32>(col * brightness, 1.0);
 }

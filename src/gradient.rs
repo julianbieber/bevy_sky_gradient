@@ -19,6 +19,8 @@ pub struct SkyPalette {
     pub c: Vec3,
     /// Phase shift
     pub d: Vec3,
+    /// Brightness multiplier
+    pub brightness: f32,
 }
 
 impl SkyPalette {
@@ -29,6 +31,8 @@ impl SkyPalette {
             b: self.b,
             c: self.c,
             d: self.d,
+            brightness_day: self.brightness,
+            brightness_night: self.brightness,
         }
     }
 }
@@ -41,6 +45,7 @@ impl Default for SkyPalette {
             b: Vec3::new(0.1, 0.1, 0.2),
             c: Vec3::new(1.0, 1.0, 1.0),
             d: Vec3::new(0.0, 0.0, 0.0),
+            brightness: 1.0,
         }
     }
 }
@@ -60,6 +65,10 @@ impl SkyPalette {
     }
     pub fn with_d(mut self, d: Vec3) -> Self {
         self.d = d;
+        self
+    }
+    pub fn with_brightness(mut self, brightness: f32) -> Self {
+        self.brightness = brightness;
         self
     }
 }
@@ -83,12 +92,14 @@ impl Default for SkyPaletteBuilder {
                 b: Vec3::new(0.2, 0.1, 0.1),
                 c: Vec3::new(1.0, 1.0, 1.0),
                 d: Vec3::new(0.0, 0.0, 0.0),
+                brightness: 1.0,
             },
             night: SkyPalette {
                 a: Vec3::new(0.0, 0.05, 0.2),
                 b: Vec3::new(0.05, 0.0, 0.1),
                 c: Vec3::new(1.0, 1.0, 1.0),
                 d: Vec3::new(0.0, 0.0, 0.0),
+                brightness: 1.0,
             },
         }
     }
@@ -113,6 +124,7 @@ impl SkyPaletteBuilder {
             b: self.day.b.lerp(self.night.b, blend),
             c: self.day.c.lerp(self.night.c, blend),
             d: self.day.d.lerp(self.night.d, blend),
+            brightness: self.day.brightness.lerp(self.night.brightness, blend),
         }
     }
 
