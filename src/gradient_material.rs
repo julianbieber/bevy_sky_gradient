@@ -9,8 +9,6 @@ use bevy::{
     shader::ShaderRef,
 };
 
-use crate::bind_groups::GradientBindGroup;
-
 pub struct GradientMaterialPlugin;
 
 impl Plugin for GradientMaterialPlugin {
@@ -19,7 +17,7 @@ impl Plugin for GradientMaterialPlugin {
     }
 }
 
-#[derive(Asset, AsBindGroup, Reflect, Debug, Clone)]
+#[derive(Asset, AsBindGroup, Reflect, Debug, Clone, Default)]
 pub struct FullGradientMaterial {
     #[uniform(0)]
     pub gradient_bind_group: crate::bind_groups::GradientBindGroup,
@@ -45,13 +43,5 @@ impl Material for FullGradientMaterial {
         }
 
         Ok(())
-    }
-}
-
-impl Default for FullGradientMaterial {
-    fn default() -> Self {
-        FullGradientMaterial {
-            gradient_bind_group: GradientBindGroup::default(),
-        }
     }
 }
