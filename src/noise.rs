@@ -167,7 +167,7 @@ pub fn update_noise_textures(
     let voronoi_size = noise_settings.voronoi_texture_size.clamp(1, max_size);
 
     // load cached noise texture files if possible
-    #[cfg(feature = "serde")]
+    #[cfg(all(feature = "serde", not(target_arch = "wasm32")))]
     {
         if noise_settings.cache_textures_locally {
             use crate::utils::path_relative_to_bevy_exe;
@@ -452,28 +452,31 @@ impl AssetLoader for NoiseTextureAssetLoader {
 
 #[cfg(feature = "serde")]
 pub fn save_noise(dir: &str, file_name: &str, asset: &NoiseTextureAsset) {
-    use crate::utils::path_relative_to_bevy_exe;
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        use crate::utils::path_relative_to_bevy_exe;
 
-    let path = path_relative_to_bevy_exe(dir);
-    if let Err(err) = std::fs::create_dir_all(&path) {
-        error!(
-            "SkyPlugin: failed to create_dir_all path: {:?}: error: {:?}",
-            path, err
-        );
-    }
-
-    match bincode::serde::encode_to_vec(asset, bincode::config::standard()) {
-        Ok(bytes) => {
-            let file_path = path_relative_to_bevy_exe(format!("{}{}", dir, file_name).as_str());
-            if let Err(err) = std::fs::write(&file_path, bytes) {
-                info!(
-                    "SkyPlugin: failed to fs::write path: {:?}, result: {:?}",
-                    file_path, err
-                );
-            }
+        let path = path_relative_to_bevy_exe(dir);
+        if let Err(err) = std::fs::create_dir_all(&path) {
+            error!(
+                "SkyPlugin: failed to create_dir_all path: {:?}: error: {:?}",
+                path, err
+            );
         }
-        Err(err) => {
-            error!("SkyPlugin: failed to encode asset err: {:?}", err);
+
+        match bincode::serde::encode_to_vec(asset, bincode::config::standard()) {
+            Ok(bytes) => {
+                let file_path = path_relative_to_bevy_exe(format!("{}{}", dir, file_name).as_str());
+                if let Err(err) = std::fs::write(&file_path, bytes) {
+                    info!(
+                        "SkyPlugin: failed to fs::write path: {:?}, result: {:?}",
+                        file_path, err
+                    );
+                }
+            }
+            Err(err) => {
+                error!("SkyPlugin: failed to encode asset err: {:?}", err);
+            }
         }
     }
 }
