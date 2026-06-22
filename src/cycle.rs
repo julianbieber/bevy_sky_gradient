@@ -4,13 +4,11 @@ use crate::sky_material::FullSkyMaterial;
 
 /// introduce a sky timer that our SunDriver+GradientDriver
 /// can use to animate the sky over time
-#[derive(Clone)]
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct SkyCyclePlugin {
     pub sky_time_settings: SkyTimeSettings,
     pub sky_time: SkyTime,
 }
-
 
 impl Plugin for SkyCyclePlugin {
     fn build(&self, app: &mut App) {
@@ -44,7 +42,7 @@ fn drive_night_time(
     let skybox_material_handle = skyboxes
         .single()
         .expect("1 entity with SkyGradientMaterial");
-    let skybox_material = sky_materials
+    let mut skybox_material = sky_materials
         .get_mut(skybox_material_handle)
         .expect("SkyBoxMaterial");
     skybox_material.night_time_distance = sky_time_settings.night_time_distance(sky_time.time);

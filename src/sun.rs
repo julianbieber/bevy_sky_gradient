@@ -103,7 +103,7 @@ fn spawn_default_sun(mut commands: Commands, sun_settings: Res<SunSettings>) {
         DirectionalLight {
             color: sun_settings.sun_light_color,
             illuminance: sun_settings.illuminance,
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             ..default()
         },
         SunDriverTag,
@@ -137,7 +137,7 @@ fn drive_sun(
     let skybox_material_handle = skyboxes
         .single()
         .expect("1 entity with SkyGradientMaterial");
-    let skybox_material = sky_materials
+    let mut skybox_material = sky_materials
         .get_mut(skybox_material_handle)
         .expect("SkyBoxMaterial");
 

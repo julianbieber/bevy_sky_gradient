@@ -1,10 +1,10 @@
 use bevy::{
     camera::visibility::RenderLayers,
+    camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     prelude::*,
     render::render_resource::{AsBindGroup, ShaderType},
     shader::ShaderRef,
 };
-use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
 use bevy_inspector_egui::{
     bevy_egui::{EguiGlobalSettings, EguiPlugin, PrimaryEguiContext},
     quick::WorldInspectorPlugin,
@@ -19,7 +19,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, (setup, setup_egui_render_layer))
         .add_plugins((EguiPlugin::default(), WorldInspectorPlugin::default()))
-        .add_plugins(NoCameraPlayerPlugin)
+        .add_plugins(FreeCameraPlugin)
         .add_plugins(MaterialPlugin::<FogMaterial>::default())
         .add_systems(Update, force_material_update)
         .add_plugins(
@@ -78,7 +78,7 @@ fn setup(
         SkyboxMagnetTag,
         Camera3d::default(),
         Transform::from_xyz(-0.4, 0.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        FlyCam,
+        FreeCamera::default(),
     ));
 }
 
@@ -141,7 +141,7 @@ fn force_material_update(
 ) {
     // If the sky state changed or the image was resized this frame:
     for handle in query.iter() {
-        if let Some(_material) = materials.get_mut(handle) {
+        if let Some(_material) = materials.get(handle) {
             // This operation *should* force Bevy to re-prepare the material's bind group
             // and re-evaluate its texture view dependency.
             // The actual bug is on the Camera's side, but this is the user workaround.

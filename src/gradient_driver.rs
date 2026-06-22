@@ -38,7 +38,7 @@ fn drive_palette(
     let skybox_material_handle = skyboxes
         .single()
         .expect("1 entity with FullGradientMaterial");
-    let skybox_material = sky_materials
+    let mut skybox_material = sky_materials
         .get_mut(skybox_material_handle)
         .expect("FullGradientMaterial");
 
