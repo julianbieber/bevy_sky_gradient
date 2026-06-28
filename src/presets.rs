@@ -3,11 +3,8 @@ use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    aurora_material::AuroraMaterial,
-    bind_groups::GradientBindGroup,
-    gradient_material::FullGradientMaterial,
-    sky_material::FullSkyMaterial,
-    sun::SunSettings,
+    aurora_material::AuroraMaterial, bind_groups::GradientBindGroup,
+    gradient_material::FullGradientMaterial, sky_material::FullSkyMaterial, sun::SunSettings,
 };
 
 /// Default sky palette for the gradient material
@@ -67,7 +64,7 @@ pub fn handle_apply_preset_events(
             let skybox_material_handle = skyboxes
                 .single()
                 .expect("1 entity with SkyGradientMaterial");
-            let skybox_material = sky_materials
+            let mut skybox_material = sky_materials
                 .get_mut(skybox_material_handle)
                 .expect("SkyBoxMaterial");
             skybox_material.stars = star_settings.clone();
@@ -76,7 +73,7 @@ pub fn handle_apply_preset_events(
         if let Some(aurora_bind_group) = &event.sky_preset.aurora_settings {
             let aurora_material_handle =
                 auroras.single().expect("1 entity with SkyGradientMaterial");
-            let aurora_material = auroras_materials
+            let mut aurora_material = auroras_materials
                 .get_mut(aurora_material_handle)
                 .expect("auroraMaterial");
             aurora_material.aurora_settings = aurora_bind_group.clone();
@@ -85,7 +82,7 @@ pub fn handle_apply_preset_events(
             let gradient_material_handle = gradient_handles
                 .single()
                 .expect("1 entity with FullGradientMaterial");
-            let gradient_material = gradient_materials
+            let mut gradient_material = gradient_materials
                 .get_mut(gradient_material_handle)
                 .expect("gradientMaterial");
             gradient_material.gradient_bind_group = gradient_bind_group.clone();

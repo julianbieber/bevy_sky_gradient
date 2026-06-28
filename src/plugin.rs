@@ -238,7 +238,7 @@ impl Plugin for SkyPlugin {
         app.add_systems(PreStartup, spawn_aurora_texture);
         app.add_systems(PreStartup, spawn_gradient_texture);
 
-        // app.add_systems(Startup, crate::assets::initialize_shaders);
+        app.add_systems(Startup, crate::assets::initialize_shaders);
         app.add_plugins(crate::assets::SkyAssetsPlugin);
         app.add_plugins(MaterialPlugin::<FullSkyMaterial>::default());
         if self.sky_builder.settings.spawn_default_skybox {
@@ -341,7 +341,7 @@ pub fn spawn_aurora_texture(
         size,
         TextureDimension::D2,
         &[0, 0, 0, 0],
-        TextureFormat::Bgra8UnormSrgb,
+        TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
     aurora_image.sampler = ImageSampler::linear();
@@ -371,7 +371,7 @@ pub fn spawn_gradient_texture(
         size,
         TextureDimension::D2,
         &[0, 0, 0, 0],
-        TextureFormat::Bgra8UnormSrgb,
+        TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
     aurora_image.sampler = ImageSampler::linear();

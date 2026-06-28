@@ -1,5 +1,9 @@
-use bevy::{color::palettes::css::WHITE, light::light_consts::lux::AMBIENT_DAYLIGHT, prelude::*};
-use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
+use bevy::{
+    camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
+    color::palettes::css::WHITE,
+    light::light_consts::lux::AMBIENT_DAYLIGHT,
+    prelude::*,
+};
 use bevy_sky_gradient::{
     gradient::SkyPaletteBuilder,
     noise::NoiseHandles,
@@ -14,7 +18,7 @@ use bevy_sky_gradient::{
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(NoCameraPlayerPlugin)
+        .add_plugins(FreeCameraPlugin)
         // SKY
         .add_plugins(
             SkyPlugin::builder_all_features()
@@ -78,7 +82,7 @@ fn setup(
         DirectionalLight {
             color: WHITE.into(),
             illuminance: AMBIENT_DAYLIGHT,
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             ..default()
         },
         Transform::default(),
@@ -97,7 +101,7 @@ fn setup(
         SkyboxMagnetTag,
         Camera3d::default(),
         Transform::from_xyz(-0.4, 0.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        FlyCam,
+        FreeCamera::default(),
     ));
 }
 

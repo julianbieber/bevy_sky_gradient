@@ -1,12 +1,14 @@
-use bevy::prelude::*;
-use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
+use bevy::{
+    camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
+    prelude::*,
+};
 use bevy_sky_gradient::{
-    aurora_material::AuroraMaterial,
-    gradient_material::FullGradientMaterial, prelude::*, sky_material::FullSkyMaterial,
+    aurora_material::AuroraMaterial, gradient_material::FullGradientMaterial, prelude::*,
+    sky_material::FullSkyMaterial,
 };
 
 use bevy_inspector_egui::{
-    bevy_egui::{EguiContext, EguiPlugin, EguiPrimaryContextPass, PrimaryEguiContext},
+    bevy_egui::{self, EguiContext, EguiPlugin, EguiPrimaryContextPass, PrimaryEguiContext},
     bevy_inspector::ui_for_resource,
     egui,
     quick::{AssetInspectorPlugin, ResourceInspectorPlugin},
@@ -20,6 +22,10 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         // egui
+        .insert_resource(bevy_egui::EguiGlobalSettings {
+            auto_create_primary_context: false,
+            ..Default::default()
+        })
         .add_plugins(EguiPlugin::default())
         .add_plugins(AssetInspectorPlugin::<FullSkyMaterial>::default())
         .add_plugins(AssetInspectorPlugin::<FullGradientMaterial>::default())
@@ -27,9 +33,8 @@ fn main() {
         .add_plugins(ResourceInspectorPlugin::<AuroraSettings>::default())
         .add_plugins(ResourceInspectorPlugin::<NoiseSettings>::default())
         .add_plugins(ResourceInspectorPlugin::<SkyTimeSettings>::default())
-
         // camera
-        .add_plugins(NoCameraPlayerPlugin)
+        .add_plugins(FreeCameraPlugin)
         // SKY plugin
         .add_plugins(
             SkyPlugin::builder_all_features()
@@ -77,10 +82,11 @@ fn setup(
     // camera
     commands.spawn((
         Camera3d::default(),
+        PrimaryEguiContext,
         // tell SkyPlugin we want the skybox centered on this camera
         SkyboxMagnetTag,
         Transform::from_xyz(-0.4, 0.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        FlyCam,
+        FreeCamera::default(),
     ));
 }
 
@@ -214,5 +220,3 @@ fn show_save_load_preset_uis(world: &mut World, egui_context: &mut EguiContext) 
         }
     });
 }
-
-

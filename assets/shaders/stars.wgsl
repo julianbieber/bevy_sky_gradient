@@ -31,12 +31,12 @@ fn stars(
     );
     let offset_world_dir = rotation_matrix * view_dir;
 
-    var noise = 1.0-noise(v3_t, v3_s, offset_world_dir * stars.sample_scale);
+    var n = 1.0-noise(v3_t, v3_s, offset_world_dir * stars.sample_scale);
     let mask = noise(n3_t, n3_s, offset_world_dir * stars.mask_scale );
     let blink_variance_noise = noise(n3_t, n3_s, offset_world_dir * stars.blink_variance_scale);
 
     // reduce star density with mask
-    noise = noise * (1.0-smoothstep(stars.mask_threshold, 1.0, mask));
+    n = n * (1.0-smoothstep(stars.mask_threshold, 1.0, mask));
 
     let base_blink_speed = global_time * stars.blink_speed;
     // star blink in different speeds anywhere between 50% -> 150%
@@ -44,7 +44,7 @@ fn stars(
     // 0: no blink, 1: full blink
     let blink = cos(base_blink_speed * speed_variance + blink_variance_noise);
     let blink_threshold = blink * stars.star_threshold_blink;
-    var star_intensity = smoothstep(stars.star_threshold + blink_threshold, 1.0, noise);
+    var star_intensity = smoothstep(stars.star_threshold + blink_threshold, 1.0, n);
     return star_intensity;
 }
 
