@@ -1,47 +1,47 @@
-#import bevy_pbr::{
+import bevy_pbr::render::{
     mesh_view_bindings::view,
     utils::coords_to_viewport_uv,
-}
-#import bevy_pbr::mesh_view_bindings::globals;
-#import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_clip}
+};
+import bevy_pbr::render::mesh_view_bindings::globals;
+import bevy_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
 
-#import "bevy_sky_gradient/shaders/sun.wgsl"::{SunSettings, sun};
-#import "bevy_sky_gradient/shaders/stars.wgsl"::{StarsSettings, stars};
+import bevy_sky_gradient::shaders::sun::{SunSettings, sun};
+import bevy_sky_gradient::shaders::stars::{StarsSettings, stars};
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(0)
+@group(constants::MATERIAL_BIND_GROUP) @binding(0)
 var<uniform> sun_settings: SunSettings;
-@group(#{MATERIAL_BIND_GROUP}) @binding(1)
+@group(constants::MATERIAL_BIND_GROUP) @binding(1)
 var<uniform> stars_settings: StarsSettings;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(2)
+@group(constants::MATERIAL_BIND_GROUP) @binding(2)
 var<uniform> night_time_distance: f32;
-@group(#{MATERIAL_BIND_GROUP}) @binding(3)
+@group(constants::MATERIAL_BIND_GROUP) @binding(3)
 var<uniform> night_visibility_range: vec2<f32>;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(4)
+@group(constants::MATERIAL_BIND_GROUP) @binding(4)
 var<uniform> feature_stars_enabled: i32;
-@group(#{MATERIAL_BIND_GROUP}) @binding(5)
+@group(constants::MATERIAL_BIND_GROUP) @binding(5)
 var<uniform> feature_sun_enabled: i32;
-@group(#{MATERIAL_BIND_GROUP}) @binding(6)
+@group(constants::MATERIAL_BIND_GROUP) @binding(6)
 var<uniform> feature_aurora_enabled: i32;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(10)
+@group(constants::MATERIAL_BIND_GROUP) @binding(10)
 var noise3_texture: texture_3d<f32>;
-@group(#{MATERIAL_BIND_GROUP}) @binding(11)
+@group(constants::MATERIAL_BIND_GROUP) @binding(11)
 var noise3_texture_sampler: sampler;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(12)
+@group(constants::MATERIAL_BIND_GROUP) @binding(12)
 var voronoi3_texture: texture_3d<f32>;
-@group(#{MATERIAL_BIND_GROUP}) @binding(13)
+@group(constants::MATERIAL_BIND_GROUP) @binding(13)
 var voronoi3_texture_sampler: sampler;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(14)
+@group(constants::MATERIAL_BIND_GROUP) @binding(14)
 var aurora_texture: texture_2d<f32>;
-@group(#{MATERIAL_BIND_GROUP}) @binding(15)
+@group(constants::MATERIAL_BIND_GROUP) @binding(15)
 var aurora_texture_sampler: sampler;
-@group(#{MATERIAL_BIND_GROUP}) @binding(16)
+@group(constants::MATERIAL_BIND_GROUP) @binding(16)
 var gradient_texture: texture_2d<f32>;
-@group(#{MATERIAL_BIND_GROUP}) @binding(17)
+@group(constants::MATERIAL_BIND_GROUP) @binding(17)
 var gradient_texture_sampler: sampler;
 
 struct VertexOutput {

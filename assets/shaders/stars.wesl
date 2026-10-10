@@ -1,4 +1,4 @@
-#import "bevy_sky_gradient/shaders/noise.wgsl"::{noise};
+import bevy_sky_gradient::shaders::noise::{noise};
 
 struct StarsSettings {
     sky_rotation_speed: f32,

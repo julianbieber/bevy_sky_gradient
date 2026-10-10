@@ -23,12 +23,12 @@ pub fn flip_mesh_normals(mesh: &mut Mesh) {
     if let Some(indices) = mesh.indices_mut() {
         match indices {
             Indices::U16(vec) => {
-                for i in vec.chunks_exact_mut(3) {
+                for i in vec.as_chunks_mut::<3>().0 {
                     i.swap(1, 2);
                 }
             }
             Indices::U32(vec) => {
-                for i in vec.chunks_exact_mut(3) {
+                for i in vec.as_chunks_mut::<3>().0 {
                     i.swap(1, 2);
                 }
             }

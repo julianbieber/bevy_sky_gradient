@@ -1,18 +1,18 @@
-#import bevy_pbr::{
+import bevy_pbr::render::{
     mesh_view_bindings::view,
     utils::coords_to_viewport_uv,
-}
-#import bevy_pbr::mesh_view_bindings::globals;
-#import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_clip}
+};
+import bevy_pbr::render::mesh_view_bindings::globals;
+import bevy_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
 
-#import "bevy_sky_gradient/shaders/aurora.wgsl"::{AuroraSettings, aurora};
+import bevy_sky_gradient::shaders::aurora::{AuroraSettings, aurora};
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(0)
+@group(constants::MATERIAL_BIND_GROUP) @binding(0)
 var<uniform> aurora_settings: AuroraSettings;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(1)
+@group(constants::MATERIAL_BIND_GROUP) @binding(1)
 var noise3_texture: texture_3d<f32>;
-@group(#{MATERIAL_BIND_GROUP}) @binding(2)
+@group(constants::MATERIAL_BIND_GROUP) @binding(2)
 var noise3_texture_sampler: sampler;
 
 struct VertexOutput {

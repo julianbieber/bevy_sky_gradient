@@ -14,7 +14,7 @@ default = ["serde"]
 serde = ["dep:serde", "dep:ron", "dep:bincode"]
 
 [dependencies]
-bevy = {version = "0.19"}
+bevy = {version = "0.20"}
 thiserror = "2"
 
 # optional serialization
@@ -26,5 +26,5 @@ bincode = {version = "2", optional = true, features = ["serde"]}
 
 [dev-dependencies]
 rand = "0.9"
-bevy-inspector-egui = "0.37"
-bevy = {version = "0.19", features = ["free_camera"]}
+bevy-inspector-egui = { git = "https://github.com/taboky-dev/bevy-inspector-egui.git", rev = "6c4689637f289647ecad5897da35c29032fcc086" }
+bevy = {version = "0.20", features = ["free_camera"]}
