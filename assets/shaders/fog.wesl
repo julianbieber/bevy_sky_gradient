@@ -1,11 +1,11 @@
-#import bevy_pbr::{
+import bevy_pbr::render::{
     mesh_view_bindings::view,
     utils::coords_to_viewport_uv,
     forward_io::VertexOutput,
-}
+};
 
-#import bevy_pbr::mesh_view_bindings::globals;
-#import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_clip}
+import bevy_pbr::render::mesh_view_bindings::globals;
+import bevy_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
 
 struct FogSettings {
     color: vec3f,
@@ -13,13 +13,13 @@ struct FogSettings {
     distance_end: f32,
 }
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(0)
+@group(constants::MATERIAL_BIND_GROUP) @binding(0)
 var<uniform> fog_settings: FogSettings;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(1)
+@group(constants::MATERIAL_BIND_GROUP) @binding(1)
 var sky_gradient_texture: texture_2d<f32>;
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(2)
+@group(constants::MATERIAL_BIND_GROUP) @binding(2)
 var sky_gradient_sampler: sampler;
 
 // this is an example how your own shaders that needs fog, can sample the sky gradient texture

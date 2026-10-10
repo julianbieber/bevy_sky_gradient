@@ -109,7 +109,7 @@ struct FogMaterial {
 
 impl Material for FogMaterial {
     fn fragment_shader() -> ShaderRef {
-        "shaders/fog.wgsl".into()
+        "shaders/fog.wesl".into()
     }
 }
 

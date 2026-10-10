@@ -1,13 +1,13 @@
-#import bevy_pbr::{
+import bevy_pbr::render::{
     mesh_view_bindings::view,
     utils::coords_to_viewport_uv,
-}
-#import bevy_pbr::mesh_view_bindings::globals;
-#import bevy_pbr::mesh_functions::{get_world_from_local, mesh_position_local_to_clip}
+};
+import bevy_pbr::render::mesh_view_bindings::globals;
+import bevy_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
 
-#import "bevy_sky_gradient/shaders/gradient.wgsl"::{PaletteParams, gradient};
+import bevy_sky_gradient::shaders::gradient::{PaletteParams, gradient};
 
-@group(#{MATERIAL_BIND_GROUP}) @binding(0)
+@group(constants::MATERIAL_BIND_GROUP) @binding(0)
 var<uniform> palette_params: PaletteParams;
 
 struct VertexOutput {
