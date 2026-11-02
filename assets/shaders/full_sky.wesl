@@ -1,3 +1,6 @@
+// Shades the camera-following sky: pins it to the far plane and composes gradient, sun,
+// stars and aurora for each view direction.
+
 import bevy_pbr::render::{
     mesh_view_bindings::view,
     utils::coords_to_viewport_uv,
@@ -52,9 +55,10 @@ struct VertexOutput {
 @vertex
 fn vertex(@location(0) position: vec3<f32>, @builtin(instance_index) vertin: u32) -> VertexOutput {
     var out: VertexOutput;
-    let world_pos = position; // since the sky sphere is centered on camera
+    let world_pos = position;
     out.world_dir = normalize(world_pos);
-    out.frag_pos = mesh_position_local_to_clip(get_world_from_local(vertin), vec4<f32>(position, 1.0));
+    let clip = mesh_position_local_to_clip(get_world_from_local(vertin), vec4<f32>(position, 1.0));
+    out.frag_pos = vec4<f32>(clip.xy, 0.0, clip.w);
     return out;
 }
 

@@ -1,9 +1,15 @@
-use bevy::{camera_controller::free_camera::FreeCamera, prelude::*};
+//! The smallest scene using `SkyPlugin` with its defaults: a ground disc, a cube, and a
+//! free-flying camera the sky follows.
+
+use bevy::{
+    camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
+    prelude::*,
+};
 use bevy_sky_gradient::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins((DefaultPlugins, FreeCameraPlugin))
         .add_systems(Startup, setup)
         .add_plugins(SkyPlugin::default())
         .run();

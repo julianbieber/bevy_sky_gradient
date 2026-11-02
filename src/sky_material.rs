@@ -1,11 +1,17 @@
-use bevy::mesh::MeshVertexBufferLayoutRef;
-use bevy::pbr::MaterialPipeline;
+//! The material the camera-following sky is drawn with: its shader inputs and the render
+//! passes it takes part in.
+
 use bevy::prelude::*;
-use bevy::render::render_resource::{AsBindGroup, CompareFunction, RenderPipelineDescriptor};
+use bevy::render::render_resource::AsBindGroup;
 use bevy::shader::ShaderRef;
 
 use crate::bind_groups::{StarsBindGroup, SunBindGroup};
 
+/// Draws its mesh on the far plane, so the sky shows only where no geometry was drawn.
+///
+/// The view direction is the mesh's local vertex position, so the mesh must be centred on
+/// its own origin and kept at the camera's translation; `SkyboxMagnetTag` does that for the
+/// default sky. The material casts no shadows and writes no depth prepass.
 #[derive(Asset, AsBindGroup, Reflect, Debug, Clone)]
 pub struct FullSkyMaterial {
     #[uniform(0)]
@@ -32,7 +38,6 @@ pub struct FullSkyMaterial {
     #[uniform(6)]
     pub feature_aurora_enabled: i32,
 
-    // noise
     #[texture(10, dimension = "3d")]
     #[sampler(11)]
     pub noise3_image: Handle<Image>,
@@ -56,18 +61,11 @@ impl Material for FullSkyMaterial {
         crate::assets::SKY_SHADER_HANDLE.into()
     }
 
-    fn specialize(
-        _pipeline: &MaterialPipeline,
-        descriptor: &mut RenderPipelineDescriptor,
-        _layout: &MeshVertexBufferLayoutRef,
-        _key: bevy::pbr::MaterialPipelineKey<Self>,
-    ) -> Result<(), bevy::render::render_resource::SpecializedMeshPipelineError> {
-        if let Some(depth_stencil) = &mut descriptor.depth_stencil {
-            depth_stencil.depth_write_enabled = Some(true);
-            depth_stencil.depth_compare = Some(CompareFunction::Always);
-        }
-
-        Ok(())
+    fn enable_prepass() -> bool {
+        false
+    }
+    fn enable_shadows() -> bool {
+        false
     }
 }
 
